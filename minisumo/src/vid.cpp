@@ -45,6 +45,7 @@ void MotorL(int pwm){
   // leftMotor1=0 and leftMotor2=1 -> moves forward / avanca / avanzar
   // leftMotor1=1 and leftMotor2=0 -> moves back / recua / retrocede
   // leftMotor1=1 and leftMotor2=1 -> stopped (braked) / parado (travado) / parado (frenado)
+  pwm = constrain(pwm,-255,255);
 
   if(pwm==0){
     digitalWrite(leftMotor1, LOW);
@@ -74,7 +75,7 @@ void MotorR(int pwm){
   // rightMotor1=0 and rightMotor2=1 -> moves forward / avanca / avanzar
   // rightMotor1=1 and rightMotor2=0 -> moves back / recua / retrocede
   // rightMotor1=1 and rightMotor2=1 -> stopped (braked) / parado (travado) / parado (frenado)
-
+  pwm = constrain(pwm,-255,255);
   if(pwm==0){
     digitalWrite(rightMotor1, LOW);
     digitalWrite(rightMotor2, LOW);
@@ -107,6 +108,7 @@ int readDIP(){
     n|= (1<<2);
   if(digitalRead(DIP1)==HIGH)
     n|= (1<<3);
+  return n;
 }
 
 #pragma endregion Base
@@ -117,11 +119,22 @@ int readDIP(){
 void MotorL(int pwm); // left motor / motor esquerdo / motor izquierdo
 void MotorR(int pwm); // right motor / motor direito / motor derecho
 int readDIP(); // read DIP switch / ler chave DIP / leer el interruptor DIP
+void manejo(int salida);
+bool isLinea();
 
-bool senl,send; //sensor izquierda, sensor derecha
+
+int senl,send; //sensor izquierda, sensor derecha
+int last;
 const int v_max=230; // velocidad máxima
 const int t=200;
 int ant1=0,ant2=0;
+// variables PID
+double kp = 130.0,ki,kd;
+double pr,in = 0.0,de;
+int error;
+int salida;
+
+
 /*******FUNCTIONS - END*******/
 
 void setup() {
@@ -170,69 +183,58 @@ void sensores();
 }
 
 void loop() {
-    sensores();
-    // Ataque
-    if (senl == 1 && send == 1)
-    {
-       while(true){ 
-          sensores();
-          if(senl==1&&send==1){//Si el choque está en frente
-            MotorL(v_max);
-            MotorR(v_max);
-          }
-          if(senl==0&&send==1){ //Si el coche está a la derecha
-              MotorL(200);
-              MotorR(150);
-              sensores();
-          }
-          if(send==0&&senl==1){ //Si el coche está a la izquierda
-              MotorL(150);
-              MotorR(200);
-              sensores();
-          }
-          if(senl==0&&send==0){ //Si no encuentra el coche
-              break;
-          }
-       }
-    }
-    
-    // Busqueda 
-    if(senl==1&&send==0){
-        MotorL(0);
-        MotorR(180);
-        delay(t);
-        ant1=1;
-    }
-    if(senl==0&&send==1){
-        MotorL(180);
-        MotorR(0);
-        delay(t);
-        ant1=0;
-    }
-    if(senl==0&&send==0){
-        if(ant1==1){
-            MotorL(-100);
-            MotorR(100);
-        }
-        if(ant1==666){
-          MotorL(60);
-          MotorR(60);
-        }
-        else{
-             MotorL(100);
-             MotorR(-100);
-        }
-    }
-    ant1=666;///ant2=0;
-    
-    if(digitalRead(lineL)==1||digitalRead(lineR)==1){
-      MotorL(-100);
-      MotorR(-100);
-      delay(400);
-    }
+
+  sensores();
+  if(isLinea()){
+    MotorL(-v_max);
+    MotorR(-v_max+100);
+    delay(500);
+  }
+
+  error = send + senl;
+  pr = error;
+  in = error + in;
+
+
+  salida = pr*kp+in*ki;
+  manejo(salida);
+  de = error;
+
+
+}
+
+void manejo(int salida){
+  if(salida<0){
+    MotorL(-salida-v_max);
+    MotorR(salida+v_max);
+
+  }else if( salida>0){
+    MotorL(salida+v_max);
+    MotorR(-salida-v_max);
+
+  }else{
+    MotorL(v_max);
+    MotorR(v_max);
+  }
+  
 }
 
 void sensores(){
-    senl=digitalRead(distL);
+    senl=-digitalRead(distL);
     send=digitalRead(distR);
+
+    if((send+senl)==0){
+      if(last == 1){
+        send = 1;
+      } else if(last == -1){
+        senl = 1;
+      }
+    }
+    last = senl+send;
+}
+bool isLinea(){
+
+  return (digitalRead(lineL)+digitalRead(lineR))!=0;
+   
+
 }
