@@ -223,14 +223,14 @@ void sensores(){
     senl=-digitalRead(distL);
     send=digitalRead(distR);
 
-    // if((send+senl)==0){
-    //   if(last == 1){
-    //     send = 1;
-    //   } else if(last == -1){
-    //     senl = 1;
-    //   }
-    // }
-    // last = senl+send;
+    if((send+senl)==0){
+      if(last == 1){
+        send = 1;
+      } else if(last == -1){
+        senl = -1;
+      }
+    }
+    last = senl+send;
 }
 bool isLinea(){
 
