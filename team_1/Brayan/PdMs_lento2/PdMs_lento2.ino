@@ -156,13 +156,14 @@ int curvaThread(struct pt* pt){
         bandera=1;
       }
       else if(sen1==0&&sen2==1){
-        MotorL(10);
-        MotorR(-150);        
+        MotorL(150);
+        MotorR(40);        
       }
       else if(sen1==1&&sen2==0){
-        MotorL(-150);
-        MotorR(10);
+        MotorL(40);
+        MotorR(150);
       }
+      else{bandera=0;}
    
    PT_YIELD(pt);
   }
@@ -270,8 +271,8 @@ while(readDIP()==1){
       //////////
       PT_SCHEDULE(sensoresThread(&sensores));
       if(bandera==0){
-        MotorL(100);
-        MotorR(-100);
+        MotorL(70);
+        MotorR(170);
         PT_SCHEDULE(curvaThread(&curva));
         PT_SCHEDULE(tiempoThread(&tiempo));
         }
