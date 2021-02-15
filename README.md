@@ -1,6 +1,7 @@
 # Msm_ucb
 * Punto 1
 * CAMBIAR EN LA FUNCION DEL dip switch
+```
 int readDIP(){
   int n=0;
   if(digitalRead(DIP4)==HIGH)
@@ -13,3 +14,4 @@ int readDIP(){
     n|= (1<<3);
   return n;
 }
+```
