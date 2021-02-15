@@ -1,12 +1,60 @@
+  #include "protothreads.h"
 /*******PINOUT DEFINES*********/
 // it is not recommended to make changes
 // nao e recomendado que se faca alteracoes
 // no se recomienda hacer cambios
 
-//CAMBIO 1
+// LED
+#define LED 6
 
-// Funciones base
-#pragma region Base
+// left motor
+#define pwmL 9
+#define leftMotor1 7
+#define leftMotor2 8
+
+// right motor
+#define pwmR 3
+#define rightMotor1 5
+#define rightMotor2 4
+
+// DIP switch
+#define DIP1 10
+#define DIP2 11
+#define DIP3 12
+#define DIP4 13
+
+// Robocore's line sensor
+#define lineL A0
+#define lineR A1
+
+// Jsumo's distance sensor
+#define distL A2
+#define distR A3
+
+// Jsumo's micro-start
+#define microST 2
+/*******PINOUT DEFINES - END*********/
+
+/*******FUNCTIONS*******/
+void MotorL(int pwm); // left motor / motor esquerdo / motor izquierdo
+void MotorR(int pwm); // right motor / motor direito / motor derecho
+int readDIP(); // read DIP switch / ler chave DIP / leer el interruptor DIP
+
+bool sen1,sen2;
+const int choque=230;
+const int t=200;
+int ant1=666,ant2;
+int var = 3000;
+bool vborde=0;
+bool bandera=0;
+bool bandera2=0;
+
+/*******FUNCTIONS - END*******/
+
+
+
+
+
 /**LEFT MOTOR CONTROL / CONTROLE DO MOTOR ESQUERDO / CONTROL DEL MOTOR IZQUIERDO**/
 // pwm = 0 -> stopped / parado / parado
 // 0<pwm<=255 -> forward / para frente / seguir adelante
@@ -80,52 +128,128 @@ int readDIP(){
     n|= (1<<3);
 }
 
-#pragma endregion Base
 
-// LED
-#define LED 6
 
-// left motor
-#define pwmL 9
-#define leftMotor1 7
-#define leftMotor2 8
 
-// right motor
-#define pwmR 3
-#define rightMotor1 5
-#define rightMotor2 4
 
-// DIP switch
-#define DIP1 10
-#define DIP2 11
-#define DIP3 12
-#define DIP4 13
 
-// Robocore's line sensor
-#define lineL A0
-#define lineR A1
+/*******HILOS - STAR*******/
+pt sensores;
+int sensoresThread(struct pt* pt){
+  PT_BEGIN(pt);
+  for(;;){
+    sen1=digitalRead(distL);
+    sen2=digitalRead(distR);
+    PT_YIELD(pt);
+    /*
+  Serial.print(sen1);
+    Serial.print("       ");
+    Serial.println(sen2);*/
+  }
+  PT_END(pt);
+}
 
-// Jsumo's distance sensor
-#define distL A2
-#define distR A3
 
-// Jsumo's micro-start
-#define microST 2
-/*******PINOUT DEFINES - END*********/
+pt buscar;
+int buscarThread(struct pt* pt){
+  PT_BEGIN(pt);
+  for(;;){
+      if(sen1==0&&sen2==1){
+        MotorL(10);
+        MotorR(-150);        
+      }
+      else if(sen1==1&&sen2==0){
+        MotorL(-150);
+        MotorR(10);
+      }
+      else{
+        MotorL(0);
+        MotorR(0);
+      }
+   PT_YIELD(pt);
+  }
+  PT_END(pt);
+}
 
-/*******FUNCTIONS*******/
-void MotorL(int pwm); // left motor / motor esquerdo / motor izquierdo
-void MotorR(int pwm); // right motor / motor direito / motor derecho
-int readDIP(); // read DIP switch / ler chave DIP / leer el interruptor DIP
 
-bool senl,send; //sensor izquierda, sensor derecha
-const int v_max=230; // velocidad máxima
-const int t=200;
-int ant1=0,ant2=0;
-/*******FUNCTIONS - END*******/
 
+pt tiempo;
+int tiempoThread(struct pt* pt){
+  PT_BEGIN(pt);
+    bandera=0;
+    PT_SLEEP(pt, var);
+    bandera=1;
+       
+  
+  PT_END(pt);
+}
+
+
+
+pt atacar;
+int atacarThread(struct pt* pt){
+  PT_BEGIN(pt);
+  for(;;){
+    if(sen1==1&&sen2==1){
+      MotorL(choque);
+      MotorR(choque);
+    }
+      else if(sen1==0&&sen2==1){
+        MotorL(200);
+        MotorR(100);        
+      }
+       else if(sen2==0&&sen1==1){
+        MotorL(100);
+        MotorR(200);
+      }
+   
+    
+  PT_YIELD(pt);
+  }
+  PT_END(pt);
+}
+
+
+pt tiempo2;
+int tiempo2Thread(struct pt* pt){
+  PT_BEGIN(pt);
+  bandera2=0;
+  PT_SLEEP(pt,4000);
+  bandera2=1;
+  PT_END(pt);
+}
+
+pt evadir;
+int evadirThread(struct pt* pt){
+  PT_BEGIN(pt);
+  vborde=1;
+  MotorL(-200);
+  MotorR(-80);
+  PT_SLEEP(pt,500);
+  PT_END(pt);
+}
+
+pt borde;
+int bordeThread(struct pt* pt){
+  PT_BEGIN(pt);
+  if((digitalRead(lineL)==1||digitalRead(lineR)==1)&&(vborde=1)){
+   MotorL(100);
+   MotorR(100);
+   PT_SLEEP(pt,400);
+  }
+  else if((digitalRead(lineL)==1||digitalRead(lineR)==1)&&(vborde=0)){
+   MotorL(-100);
+   MotorR(-100);
+   PT_SLEEP(pt,400);
+  }
+  PT_END(pt);
+}
+
+
+
+/*******HILOS - END*******/
 void setup() {
-
+  //Serial.begin(3200);
   /****************PINOUT CONFIG****************/
   // OUTPUTS
   pinMode(LED, OUTPUT);         // led
@@ -165,74 +289,45 @@ void setup() {
   MotorL(0); // left motor stopped / motor esquerdo parado / motor izquierdo parado 
   MotorR(0); // right motor stopped / motor direito parado / motor derecho parado 
     
-void sensores();
   /*************INITIAL CONDITIONS - END*************/
+
+/*************HILOS-CONFIG - STAR*************/
+  PT_INIT(&sensores);
+  PT_INIT(&buscar);
+  PT_INIT(&tiempo);
+  PT_INIT(&atacar);
+  PT_INIT(&tiempo2);
+  PT_INIT(&evadir);
+  PT_INIT(&borde);
+  
 }
 
 void loop() {
-    sensores();
-    // Ataque
-    if (senl == 1 && send == 1)
-    {
-       while(true){ 
-          sensores();
-          if(senl==1&&send==1){//Si el choque está en frente
-            MotorL(v_max);
-            MotorR(v_max);
-          }
-          if(senl==0&&send==1){ //Si el coche está a la derecha
-              MotorL(200);
-              MotorR(150);
-              sensores();
-          }
-          if(send==0&&senl==1){ //Si el coche está a la izquierda
-              MotorL(150);
-              MotorR(200);
-              sensores();
-          }
-          if(senl==0&&send==0){ //Si no encuentra el coche
-              break;
-          }
-       }
-    }
-    
-    // Busqueda 
-    if(senl==1&&send==0){
-        MotorL(0);
-        MotorR(180);
-        delay(t);
-        ant1=1;
-    }
-    if(senl==0&&send==1){
-        MotorL(180);
-        MotorR(0);
-        delay(t);
-        ant1=0;
-    }
-    if(senl==0&&send==0){
-        if(ant1==1){
-            MotorL(-100);
-            MotorR(100);
-        }
-        if(ant1==666){
-          MotorL(60);
-          MotorR(60);
-        }
-        else{
-             MotorL(100);
-             MotorR(-100);
-        }
-    }
-    ant1=666;///ant2=0;
-    
-    if(digitalRead(lineL)==1||digitalRead(lineR)==1){
-      MotorL(-100);
-      MotorR(-100);
-      delay(400);
-    }
-}
 
-void sensores(){
-    senl=digitalRead(distL);
-    send=digitalRead(distR);
+
+  //////////
+  PT_SCHEDULE(sensoresThread(&sensores));
+  if(bandera==0){
+    PT_SCHEDULE(buscarThread(&buscar));
+    PT_SCHEDULE(tiempoThread(&tiempo));
+    }
+  
+  
+  else{
+    if(bandera2=0){
+    PT_SCHEDULE(atacarThread(&atacar));
+    PT_SCHEDULE(tiempo2Thread(&tiempo2));
+    PT_SCHEDULE(bordeThread(&borde));
+    }
+    else{
+    PT_SCHEDULE(evadirThread(&evadir));
+    PT_SCHEDULE(bordeThread(&borde));
+    var = 500;
+    bandera=0;
+    }
+    }
+  
+  ////////////
+  
+  
 }
