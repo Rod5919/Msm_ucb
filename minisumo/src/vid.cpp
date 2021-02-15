@@ -234,6 +234,7 @@ void sensores(){
 }
 bool isLinea(){
 
-  return (digitalRead(lineL)+digitalRead(lineR))!=0 
+  return (digitalRead(lineL)+digitalRead(lineR))!=0;
+   
 
 }
