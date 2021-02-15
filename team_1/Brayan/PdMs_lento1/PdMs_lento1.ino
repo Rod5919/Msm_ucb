@@ -193,10 +193,10 @@ int atacarThread(struct pt* pt){
     }
       else if(sen1==0&&sen2==1){
         MotorL(200);
-        MotorR(100);        
+        MotorR(70);        
       }
        else if(sen2==0&&sen1==1){
-        MotorL(100);
+        MotorL(70);
         MotorR(200);
       }
    
@@ -264,24 +264,36 @@ void setup() {
 }
 
 void loop() {
-
-
-  //////////
-  PT_SCHEDULE(sensoresThread(&sensores));
-  if(bandera==0){
-    PT_SCHEDULE(buscarThread(&buscar));
-    PT_SCHEDULE(tiempoThread(&tiempo));
+while(readDIP()==1){
+  if(digitalRead(microST)==HIGH){
+    while(true){
+      //////////
+      PT_SCHEDULE(sensoresThread(&sensores));
+      if(bandera==0){
+        PT_SCHEDULE(buscarThread(&buscar));
+        PT_SCHEDULE(tiempoThread(&tiempo));
+        }
+      
+      
+      else{
+        PT_SCHEDULE(atacarThread(&atacar));}
+      
+      ////////////
+      
+      if(digitalRead(lineL)==1||digitalRead(lineR)==1){
+       MotorL(-150);
+       MotorR(-150);
+       delay(600);
+       MotorL(-100);
+       MotorR(-10);
+       delay(400);
+      }
+      if(digitalRead(microST)==LOW){
+        MotorL(0);
+        MotorR(0);
+        for(;;){}
+      }
     }
-  
-  
-  else{
-    PT_SCHEDULE(atacarThread(&atacar));}
-  
-  ////////////
-  
-  if(digitalRead(lineL)==1||digitalRead(lineR)==1){
-   MotorL(-100);
-   MotorR(-10);
-   delay(400);
   }
+}
 }
