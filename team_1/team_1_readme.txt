@@ -3,4 +3,4 @@ LISTO!!   en breve subiremos material. :) ya estamos por usar este metodo de ver
 
 1.-
 2 .-  ____sentido antiorario hasta encontrar el (objetivo y busca choca) ****ya tenemos ,  dos segundos sino a busqueda y choque
-3.-
+3.- Mover
