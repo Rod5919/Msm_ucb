@@ -166,17 +166,17 @@ void manejo(int salida){
   
 }
 void sensores2(){
-  senl=-digitalRead(distL);
-  send=digitalRead(distR);
+  sen1=-digitalRead(distL);
+  sen2=digitalRead(distR);
 
-  if((send+senl)==0){
+  if((sen2+sen1)==0){
     if(last == 1){
-      send = 1;
+      sen2 = 1;
     } else if(last == -1){
-      senl = -1;
+      sen1 = -1;
     }
   }
-  last = senl+send;
+  last = sen1+sen2;
 }
 bool isLinea(){
 
@@ -559,7 +559,7 @@ void estrategia4(){
       delay(500);
     }
 
-    error = send + senl;
+    error = sen2 + sen1;
     pr = error;
     in = error + in;
     in = constrain(in,-100,100);
