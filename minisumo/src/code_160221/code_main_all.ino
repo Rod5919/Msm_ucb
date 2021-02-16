@@ -524,21 +524,13 @@ void estrategia4(){
         
         ////////////
         
-        if(digitalRead(lineL)==1&&digitalRead(lineR)==1){
-        MotorL(-150);
-        MotorR(-150);
-        delay(600);
-        MotorL(-100);
-        MotorR(-10);
-        delay(400);
-        }
 
-        else if(analogRead(lineL)<=626||analogRead(lineR)>=626){
+        else if(analogRead(lineL)<=626&&analogRead(lineR)>=726){
         MotorL(-100);
         MotorR(100);
         delay(400);
         }
-        else if(analogRead(lineL)>=626||analogRead(lineR)<=626){
+        else if(analogRead(lineL)>=726&&analogRead(lineR)<=626){
         MotorL(100);
         MotorR(-100);
         delay(400);
@@ -556,6 +548,10 @@ void estrategia4(){
   }
 
   void estrategia5(){
+        /////para que el arbitro inicie la peelea:
+
+    if(digitalRead(microST)==HIGH){
+      while(true){
     sensores2();
     if(isLinea()){
       MotorL(-v_max);
@@ -572,6 +568,16 @@ void estrategia4(){
     salida = pr*kp+in*ki+de*kd;
     manejo(salida);
     de = error;
+
+    /////para que el arbitro pare la peelea:
+    if(digitalRead(microST)==LOW){
+          MotorL(0);
+          MotorR(0);
+          for(;;){}
+        }
+
+  }
+  }
   }
 
 #pragma endregion
@@ -579,73 +585,73 @@ void estrategia4(){
 void loop() {
   if (readDIP()==1){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia1();
   }
   else if (readDIP()==2){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia2();
   }
   else if (readDIP()==3){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia3();
   }else if (readDIP()==4){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia4();
   }else{
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia5();
