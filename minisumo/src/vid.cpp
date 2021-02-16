@@ -124,13 +124,13 @@ bool isLinea();
 
 
 int senl,send; //sensor izquierda, sensor derecha
-int last;
 const int v_max=230; // velocidad máxima
 const int t=200;
 int ant1=0,ant2=0;
 // variables PID
-double kp = 130.0,ki,kd;
-double pr,in = 0.0,de;
+int kp = 130.0,ki = 1,kd = 1;
+int pr = 0,in = 0,de = 0;
+int last;
 int error;
 int salida;
 
@@ -194,9 +194,10 @@ void loop() {
   error = send + senl;
   pr = error;
   in = error + in;
+  in = constrain(in,-100,100);
+  de = error-de;
 
-
-  salida = pr*kp+in*ki;
+  salida = pr*kp+in*ki+de*kd;
   manejo(salida);
   de = error;
 
@@ -227,7 +228,7 @@ void sensores(){
       if(last == 1){
         send = 1;
       } else if(last == -1){
-        senl = 1;
+        senl = -1;
       }
     }
     last = senl+send;
