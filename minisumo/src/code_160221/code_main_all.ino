@@ -41,21 +41,23 @@
 
 #pragma region Variables
 //Generales
-bool sen1,sen2; //sensor izquierda, sensor derecha
+int sen1,sen2; //sensor izquierda, sensor derecha
 const int v_max=230; // velocidad máxima
 const int t=200;
 int ant1=0,ant2=0;
 
 //estrategia 1
 //estrategia 2
-double kp = 130.0,ki,kd;
-double pr,in = 0.0,de;
-int last;
-int error;
-int salida;
+
 //estrategia 3
 //estrategia 4
 bool bandera = 0;
+//estrategia 5
+int kp = 130,ki = 1,kd = 0;
+int pr = 0,in = 0,de = 0;
+int last;
+int error;
+int salida;
 
 #pragma endregion
 
@@ -76,7 +78,7 @@ void MotorL(int pwm){
   // leftMotor1=0 and leftMotor2=1 -> moves forward / avanca / avanzar
   // leftMotor1=1 and leftMotor2=0 -> moves back / recua / retrocede
   // leftMotor1=1 and leftMotor2=1 -> stopped (braked) / parado (travado) / parado (frenado)
-
+  pwm = constrain(pwm,-255,255);
   if(pwm==0){
     digitalWrite(leftMotor1, LOW);
     digitalWrite(leftMotor2, LOW);
@@ -103,7 +105,7 @@ void MotorR(int pwm){
   // rightMotor1=0 and rightMotor2=1 -> moves forward / avanca / avanzar
   // rightMotor1=1 and rightMotor2=0 -> moves back / recua / retrocede
   // rightMotor1=1 and rightMotor2=1 -> stopped (braked) / parado (travado) / parado (frenado)
-
+  pwm = constrain(pwm,-255,255);
   if(pwm==0){
     digitalWrite(rightMotor1, LOW);
     digitalWrite(rightMotor2, LOW);
@@ -143,7 +145,7 @@ void sensores(){
 }
 
 // Estrategia 1
-// Estrategia 2
+// Estrategia 5
 void manejo(int salida);
 void sensores2();
 bool isLinea();
@@ -164,17 +166,17 @@ void manejo(int salida){
   
 }
 void sensores2(){
-    sen1=-digitalRead(distL);
-    sen2=digitalRead(distR);
+  senl=-digitalRead(distL);
+  send=digitalRead(distR);
 
-    if((sen2+sen1)==0){
-      if(last == 1){
-        sen2 = 1;
-      } else if(last == -1){
-        sen1 = 1;
-      }
+  if((send+senl)==0){
+    if(last == 1){
+      send = 1;
+    } else if(last == -1){
+      senl = -1;
     }
-    last = sen1+sen2;
+  }
+  last = senl+send;
 }
 bool isLinea(){
 
@@ -553,6 +555,25 @@ void estrategia4(){
     }
   }
 
+  void estrategia5(){
+    sensores2();
+    if(isLinea()){
+      MotorL(-v_max);
+      MotorR(-v_max+100);
+      delay(500);
+    }
+
+    error = send + senl;
+    pr = error;
+    in = error + in;
+    in = constrain(in,-100,100);
+    de = error-de;
+
+    salida = pr*kp+in*ki+de*kd;
+    manejo(salida);
+    de = error;
+  }
+
 #pragma endregion
 
 void loop() {
@@ -588,7 +609,7 @@ void loop() {
     digitalWrite(LED,LOW);
     while(true)
     estrategia3();
-  }else {
+  }else if (readDIP()==4){
     digitalWrite(LED,HIGH);
     delay(1000);
     digitalWrite(LED,LOW);
@@ -606,5 +627,28 @@ void loop() {
     digitalWrite(LED,LOW);
     while(true)
     estrategia4();
+  }else{
+    digitalWrite(LED,HIGH);
+    delay(1000);
+    digitalWrite(LED,LOW);
+    delay(1000);
+    digitalWrite(LED,HIGH);
+    delay(1000);
+    digitalWrite(LED,LOW);
+    delay(1000);
+    digitalWrite(LED,HIGH);
+    delay(1000);
+    digitalWrite(LED,LOW);
+     delay(1000);
+    digitalWrite(LED,HIGH);
+    delay(1000);
+    digitalWrite(LED,LOW);
+     delay(1000);
+    digitalWrite(LED,HIGH);
+    delay(1000);
+    digitalWrite(LED,LOW);
+    while(true)
+    estrategia5();
+
   }
 }

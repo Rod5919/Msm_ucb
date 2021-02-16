@@ -124,13 +124,13 @@ bool isLinea();
 
 
 int senl,send; //sensor izquierda, sensor derecha
-int last;
 const int v_max=230; // velocidad máxima
 const int t=200;
 int ant1=0,ant2=0;
 // variables PID
 int kp = 130.0,ki = 1,kd = 1;
 int pr = 0,in = 0,de = 0;
+int last;
 int error;
 int salida;
 
