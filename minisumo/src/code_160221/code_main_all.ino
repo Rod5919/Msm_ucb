@@ -579,73 +579,73 @@ void estrategia4(){
 void loop() {
   if (readDIP()==1){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia1();
   }
   else if (readDIP()==2){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia2();
   }
   else if (readDIP()==3){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia3();
   }else if (readDIP()==4){
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia4();
   }else{
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
-     delay(1000);
+     delay(500);
     digitalWrite(LED,HIGH);
-    delay(1000);
+    delay(500);
     digitalWrite(LED,LOW);
     while(true)
     estrategia5();
