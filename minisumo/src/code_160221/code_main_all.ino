@@ -556,6 +556,10 @@ void estrategia4(){
   }
 
   void estrategia5(){
+        /////para que el arbitro inicie la peelea:
+
+    if(digitalRead(microST)==HIGH){
+      while(true){
     sensores2();
     if(isLinea()){
       MotorL(-v_max);
@@ -572,6 +576,16 @@ void estrategia4(){
     salida = pr*kp+in*ki+de*kd;
     manejo(salida);
     de = error;
+
+    /////para que el arbitro pare la peelea:
+    if(digitalRead(microST)==LOW){
+          MotorL(0);
+          MotorR(0);
+          for(;;){}
+        }
+
+  }
+  }
   }
 
 #pragma endregion
