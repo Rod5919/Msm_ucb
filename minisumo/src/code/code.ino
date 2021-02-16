@@ -135,6 +135,7 @@ int readDIP(){
     n|= (1<<2);
   if(digitalRead(DIP1)==HIGH)
     n|= (1<<3);
+  return n;
 }
 void sensores(){
     sen1=digitalRead(distL);
@@ -229,7 +230,7 @@ int buscarThread(struct pt* pt){
 int tiempoThread(struct pt* pt){
   PT_BEGIN(pt);
     bandera=0;
-    if (DIP3)
+    if (readDIP() == 3)
     {
       PT_SLEEP(pt, 8000);
     }
@@ -511,19 +512,47 @@ void estrategia4(){
 #pragma endregion
 
 void loop() {
-  if (DIP1){
+  if (readDIP() == 1){
     while(true)
+    for (int i = 0; i < 1; i++)
+    {
+      digitalWrite(LED,HIGH);
+      delay(500);
+      digitalWrite(LED,LOW);
+      delay(500);
+    }
     estrategia1();
   }
-  else if (DIP2){
+  else if (readDIP() == 2){
+    for (int i = 0; i < 2; i++)
+    {
+      digitalWrite(LED,HIGH);
+      delay(500);
+      digitalWrite(LED,LOW);
+      delay(500);
+    }
     while(true)
     estrategia2();
   }
-  else if (DIP3){
+  else if (readDIP() == 3){
     while(true)
+    for (int i = 0; i < 3; i++)
+    {
+      digitalWrite(LED,HIGH);
+      delay(500);
+      digitalWrite(LED,LOW);
+      delay(500);
+    }
     estrategia3();
   }else {
     while(true)
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(LED,HIGH);
+      delay(500);
+      digitalWrite(LED,LOW);
+      delay(500);
+    }
     estrategia4();
   }
 }
