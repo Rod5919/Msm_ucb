@@ -524,21 +524,13 @@ void estrategia4(){
         
         ////////////
         
-        if(digitalRead(lineL)==1&&digitalRead(lineR)==1){
-        MotorL(-150);
-        MotorR(-150);
-        delay(600);
-        MotorL(-100);
-        MotorR(-10);
-        delay(400);
-        }
 
-        else if(analogRead(lineL)<=626||analogRead(lineR)>=626){
+        else if(analogRead(lineL)<=626&&analogRead(lineR)>=726){
         MotorL(-100);
         MotorR(100);
         delay(400);
         }
-        else if(analogRead(lineL)>=626||analogRead(lineR)<=626){
+        else if(analogRead(lineL)>=726&&analogRead(lineR)<=626){
         MotorL(100);
         MotorR(-100);
         delay(400);
