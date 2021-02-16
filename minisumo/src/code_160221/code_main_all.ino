@@ -445,24 +445,20 @@ int var=0;
 // Fast 2
 void estrategia2(){
   //////////
-  PT_SCHEDULE(sensorThread(&sensor));
+  PT_SCHEDULE(sensoresThread(&sensores));
   if(bandera==0){
     PT_SCHEDULE(buscarThread(&buscar));
     PT_SCHEDULE(tiempoThread(&tiempo));
-    }
-  
-  
-  else{
-    if(bandera2=0){
-    PT_SCHEDULE(atacarThread(&atacar));
-    PT_SCHEDULE(tiempoThread(&tiempo));
-    PT_SCHEDULE(bordeThread(&borde));
-    }
-    else{
-    PT_SCHEDULE(evadirThread(&evadir));
-    PT_SCHEDULE(bordeThread(&borde));
-    var = 500;
-    bandera=0;
+    if(bandera==1){
+      PT_SCHEDULE(atacarThread(&atacar));
+      PT_SCHEDULE(tiempo2Thread(&tiempo2));
+      PT_SCHEDULE(bordeThread(&borde));
+      if(bandera2==1){
+        PT_SCHEDULE(evadirThread(&evadir));
+        PT_SCHEDULE(bordeThread(&borde));
+        var = 500;
+        bandera=0;
+      }
     }
     }
   
