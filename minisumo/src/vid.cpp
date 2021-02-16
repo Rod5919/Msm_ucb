@@ -194,6 +194,7 @@ void loop() {
   error = send + senl;
   pr = error;
   in = error + in;
+  in = constrain(in,-100,100);
   de = error-de;
 
   salida = pr*kp+in*ki+de*kd;
