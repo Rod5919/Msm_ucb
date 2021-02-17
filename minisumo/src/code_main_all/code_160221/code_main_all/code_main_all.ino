@@ -466,6 +466,7 @@ void estrategia2(){
   
   ////////////
 }
+}
 
 // Slow 
 void estrategia3(){
