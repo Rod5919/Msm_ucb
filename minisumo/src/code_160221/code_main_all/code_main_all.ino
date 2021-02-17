@@ -444,25 +444,28 @@ int var=0;
 // Fast 2
 void estrategia2(){
   //////////
-  PT_SCHEDULE(sensorThread(&sensor));
-  if(bandera==0){
-    PT_SCHEDULE(buscarThread(&buscar));
-    PT_SCHEDULE(tiempoThread(&tiempo));
-    if(bandera==1){
-      PT_SCHEDULE(atacarThread(&atacar));
+  if(digitalRead(microST)==HIGH){
+    while(true){
+    PT_SCHEDULE(sensorThread(&sensor));
+    if(bandera==0){
+      PT_SCHEDULE(buscarThread(&buscar));
       PT_SCHEDULE(tiempoThread(&tiempo));
-      PT_SCHEDULE(bordeThread(&borde));
-      if(bandera2==1){
-        PT_SCHEDULE(evadirThread(&evadir));
+      if(bandera==1){
+        PT_SCHEDULE(atacarThread(&atacar));
+        PT_SCHEDULE(tiempoThread(&tiempo));
         PT_SCHEDULE(bordeThread(&borde));
-        var = 500;
-        bandera=0;
+        if(bandera2==1){
+          PT_SCHEDULE(evadirThread(&evadir));
+          PT_SCHEDULE(bordeThread(&borde));
+          var = 500;
+          bandera=0;
+        }
       }
     }
-    }
+  }
   
   ////////////
-  }
+}
 
 // Slow 
 void estrategia3(){
@@ -550,24 +553,28 @@ void estrategia4(){
     }
   }
 
-  void estrategia5(){
-    sensores2();
-    if(isLinea()){
-      MotorL(-v_max);
-      MotorR(-v_max+100);
-      delay(500);
+void estrategia5(){
+  if(digitalRead(microST)==HIGH){
+    while(true){
+      sensores2();
+      if(isLinea()){
+        MotorL(-v_max);
+        MotorR(-v_max+100);
+        delay(500);
+      }
+
+      error = sen2 - sen1;
+      pr = error;
+      in = error + in;
+      in = constrain(in,-100,100);
+      de = error-de;
+
+      salida = pr*kp+in*ki+de*kd;
+      manejo(salida);
+      de = error;
     }
-
-    error = sen2 - sen1;
-    pr = error;
-    in = error + in;
-    in = constrain(in,-100,100);
-    de = error-de;
-
-    salida = pr*kp+in*ki+de*kd;
-    manejo(salida);
-    de = error;
   }
+}
 
 #pragma endregion
 
