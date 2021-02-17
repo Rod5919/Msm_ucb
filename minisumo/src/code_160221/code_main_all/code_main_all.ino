@@ -53,7 +53,7 @@ int ant1=0,ant2=0;
 //estrategia 4
 bool bandera = 0;
 //estrategia 5
-int kp = 130,ki = 1,kd = 0;
+int kp = 99,ki = 0,kd = 0;
 int pr = 0,in = 0,de = 0;
 int last;
 int error;
@@ -166,9 +166,8 @@ void manejo(int salida){
   
 }
 void sensores2(){
-  sen1=-digitalRead(distL);
+  sen1=digitalRead(distL);
   sen2=digitalRead(distR);
-
   if((sen2+sen1)==0){
     if(last == 1){
       sen2 = 1;
@@ -180,7 +179,7 @@ void sensores2(){
 }
 bool isLinea(){
 
-  return (digitalRead(lineL)+digitalRead(lineR))!=0;
+  return  analogRead(lineL)<=626||analogRead(lineR)<=626;
 
 }
 
@@ -445,13 +444,13 @@ int var=0;
 // Fast 2
 void estrategia2(){
   //////////
-  PT_SCHEDULE(sensoresThread(&sensores));
+  PT_SCHEDULE(sensorThread(&sensor));
   if(bandera==0){
     PT_SCHEDULE(buscarThread(&buscar));
     PT_SCHEDULE(tiempoThread(&tiempo));
     if(bandera==1){
       PT_SCHEDULE(atacarThread(&atacar));
-      PT_SCHEDULE(tiempo2Thread(&tiempo2));
+      PT_SCHEDULE(tiempoThread(&tiempo));
       PT_SCHEDULE(bordeThread(&borde));
       if(bandera2==1){
         PT_SCHEDULE(evadirThread(&evadir));
@@ -559,7 +558,7 @@ void estrategia4(){
       delay(500);
     }
 
-    error = sen2 + sen1;
+    error = sen2 - sen1;
     pr = error;
     in = error + in;
     in = constrain(in,-100,100);
